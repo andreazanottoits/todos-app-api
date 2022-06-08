@@ -2,20 +2,21 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import pino from "pino";
 import { fastify } from "fastify";
 
-const server = fastify({
-  logger: pino({ level: "info" }),
-});
+const server = require("fastify")();
 
 server.register(
   require("fastify-cors"),
-  (instance) => (req: FastifyRequest, callback: any) => {
+  (instance: any) => (req: FastifyRequest, callback: any) => {
     const corsOptions = {
       // This is NOT recommended for production as it enables reflection exploits
       origin: true,
     };
 
     if (req.headers.origin) {
-      if (/^localhost$/m.test(req.headers.origin)) {
+      if (
+        /^localhost$/m.test(req.headers.origin) ||
+        /^127\.0\.0\.1$/m.test(req.headers.origin)
+      ) {
         corsOptions.origin = false;
       }
     }
@@ -30,13 +31,4 @@ server.post("/login", async (request: FastifyRequest, reply: FastifyReply) => {
     .send({ token: "world" });
 });
 
-const start = async () => {
-  try {
-    await server.listen(3000);
-    console.log("Server started successfully");
-  } catch (err) {
-    server.log.error(err);
-    process.exit(1);
-  }
-};
-start();
+server.listen(8080);
