@@ -5,10 +5,9 @@ import { fastify } from "fastify";
 const server = require("fastify")();
 
 server.register(
-  require("fastify-cors"),
+  require("@fastify/cors"),
   (instance: any) => (req: FastifyRequest, callback: any) => {
     const corsOptions = {
-      // This is NOT recommended for production as it enables reflection exploits
       origin: true,
     };
 
@@ -20,7 +19,7 @@ server.register(
         corsOptions.origin = false;
       }
     }
-    callback(null, corsOptions); // callback expects two parameters: error and options
+    callback(new Error("Not allowed"), corsOptions); // callback expects two parameters: error and options
   }
 );
 
